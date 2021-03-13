@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using TestProject.Models;
 using Microsoft.EntityFrameworkCore;
 using TestProject.HospitalData;
+using Microsoft.OpenApi.Models;
 
 namespace TestProject
 {
@@ -23,6 +24,11 @@ namespace TestProject
         {
             services.AddControllers();
 
+            services.AddSwaggerGen(options => 
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            });
+
             services.AddDbContextPool<HospitalContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("HospitalContextConnectionString")));
 
@@ -34,6 +40,13 @@ namespace TestProject
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
